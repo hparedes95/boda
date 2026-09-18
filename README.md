@@ -36,7 +36,8 @@ const CONFIG = {
   ano:    "2027",
   dia:    "23",
   mes:    "OCTUBRE",
-  web:    ""        // URL de la web con toda la info; vacío = "WEB PROXIMAMENTE"
+  web:    "https://www.bodas.net/web/sara-gamez-guasch-and-hector-paredes"
+                    // URL de la web con toda la info; vacío = "WEB PROXIMAMENTE"
 };
 ```
 

@@ -527,9 +527,11 @@ function caption(list){
   const age = st - cur.t;
   const a = Math.min(1, age*3)*Math.min(1, Math.max(0,(cur.d-age)*3));
   if(a<=0) return;
+  const home=scene().id==='l2';
+  ctx.globalAlpha=home?1:a;
+  rect(0,236,W,home?34:22,home?'#080f14':'rgba(0,0,0,.62)');
   ctx.globalAlpha=a;
-  rect(0,236,W,22,'rgba(0,0,0,.62)');
-  tsh(cur.s, W/2, 242, '#ffffff', 8);
+  tsh(cur.s, W/2, home?246:242, '#ffffff', home?10:8);
   ctx.globalAlpha=1;
 }
 let conf=[];
@@ -542,8 +544,8 @@ function stepConf(dt,draw=true){
   conf = conf.filter(p=>p.l>0 && p.y<H+10);
   if(draw) for(const p of conf) rect(p.x,p.y,2,2,p.c);
 }
-function hud(label, prog){
-  rect(0,0,W,26,'rgba(0,0,0,.55)');
+function hud(label, prog,background='rgba(0,0,0,.55)'){
+  rect(0,0,W,26,background);
   tsh(label, 12, 9, '#ffd257', 8, 'left');
   rect(340,11,128,6,'#241a2e');
   rect(341,12,126*Math.max(0,Math.min(1,prog)),4,'#35d6ff');
@@ -560,7 +562,7 @@ function initL1(){
 }
 const CAP1 = [
   {t:.4,   d:3.2, s:CONFIG.anio + '. SE CONOCIERON'},
-  {t:3.9,  d:3.2, s:'SIN MIRAMIENTOS, LIVERPOOL'},
+  {t:3.9,  d:3.2, s:'SIN MIRAMIENTOS SE FUERON A LIVERPOOL'},
   {t:7.4,  d:3.2, s:'LLOVIA SIN PARAR. LES DIO IGUAL'},
   {t:10.8, d:2.2, s:'HASTA QUE DECIDIERON VOLVER A CASA'}
 ];
@@ -702,7 +704,7 @@ function drawL2(dt){
   }
   stepConf(dt,false);
   drawL2World(ctx,236);
-  hud('NIVEL 2  ·  ESPANA', l2.built/NEED);
+  hud('NIVEL 2  ·  ESPANA', l2.built/NEED,'#080f14');
   caption(CAP2);
 }
 
@@ -949,6 +951,10 @@ function presentFrame(){
     // Mantener todo el escenario evita perder la casa, los invitados o los personajes.
     const label=id==='l1' ? 'NIVEL 1 · LIVERPOOL' : id==='l2' ? 'NIVEL 2 · ESPANA' : 'NIVEL 3 · LA BODA';
     const progress=id==='l1' ? st/scene().dur : id==='l2' ? l2.built/NEED : l3.power/100;
+    if(id==='l2'){
+      screen.fillStyle='#080f14'; screen.fillRect(24,64,W-48,128);
+      screen.fillRect(20,620,W-40,160);
+    }
     portraitText(label,90,'#ffd257',16);
     if(id==='l3') portraitText('FUERZA',130,'#ffffff',12);
     screen.fillStyle='#241a2e'; screen.fillRect(48,160,384,10);
@@ -965,9 +971,6 @@ function presentFrame(){
     if(current){
       const age=st-current.t;
       screen.globalAlpha=Math.min(1,age*3)*Math.min(1,Math.max(0,(current.d-age)*3));
-      if(id==='l2'){
-        screen.fillStyle='rgba(18,31,26,.8)'; screen.fillRect(20,620,W-40,160);
-      }
       portraitText(current.s,id==='l2'?655:610,'#ffffff',18);
       screen.globalAlpha=1;
     }

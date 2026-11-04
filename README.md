@@ -7,7 +7,9 @@ navegador con Canvas y Web Audio.
 La invitación se adapta a formato vertical u horizontal al girar el dispositivo,
 sin reiniciar la reproducción.
 Los subtítulos usan líneas elegidas por frase para conservar las palabras y los
-acentos completos, con una tipografía de lectura sobre el paisaje sombreado.
+acentos completos, con la misma fuente retro del título sobre el paisaje sombreado.
+Las tildes se dibujan en la cuadrícula de la fuente para conservar el tamaño de
+las mayúsculas en los nombres, títulos y subtítulos.
 
 ## Ver la web
 

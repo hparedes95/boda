@@ -501,10 +501,35 @@ function actor(target,sp,pal,x,feet,scale,bob=0){
 }
 function rect(x,y,w,h,c){ ctx.fillStyle=c; ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h)); }
 function vgrad(x,y,w,h,a,b){ const g=ctx.createLinearGradient(0,y,0,y+h); g.addColorStop(0,a); g.addColorStop(1,b); ctx.fillStyle=g; ctx.fillRect(x,y,w,h); }
+// Conservar la altura de las mayúsculas y dibujar sus tildes en la misma cuadrícula.
+function retroText(target,s,x,y,size){
+  if(!/[ÁÉÍÓÚÑÜ\u0301\u0303\u0308]/u.test(s)){ target.fillText(s,x,y); return; }
+  const glyphs=Array.from(s.normalize('NFC')).map(letter=>{
+    const parts=letter.normalize('NFD');
+    return /^[A-Z][\u0301\u0303\u0308]$/.test(parts) ? {base:parts[0],mark:parts[1]} : {base:letter};
+  });
+  const base=glyphs.map(glyph=>glyph.base).join('');
+  target.fillText(base,x,y);
+  const width=target.measureText(base).width;
+  const left=target.textAlign==='center' ? x-width/2 :
+    (target.textAlign==='right'||target.textAlign==='end') ? x-width : x;
+  const unit=Math.max(1,Math.round(size/8));
+  const top=Math.round(y-target.measureText('E').actualBoundingBoxAscent-3*unit);
+  let prefix='';
+  for(const glyph of glyphs){
+    if(!glyph.mark){ prefix+=glyph.base; continue; }
+    const gx=left+target.measureText(prefix).width;
+    const pixel=(dx,dy,w=1)=>target.fillRect(Math.round(gx+dx*unit),top+dy*unit,w*unit,unit);
+    if(glyph.mark==='\u0301'){ pixel(4,0); pixel(3,1); }
+    else if(glyph.mark==='\u0303'){ pixel(2,1); pixel(3,0); pixel(4,1); pixel(5,0); }
+    else if(glyph.mark==='\u0308'){ pixel(2,1); pixel(5,1); }
+    prefix+=glyph.base;
+  }
+}
 function txt(s,x,y,col,size,align){
   ctx.font=(size||8)+'px "Press Start 2P", monospace';
   ctx.textAlign=align||'center'; ctx.textBaseline='top';
-  ctx.fillStyle=col||'#fff'; ctx.fillText(s,Math.round(x),Math.round(y));
+  ctx.fillStyle=col||'#fff'; retroText(ctx,s,Math.round(x),Math.round(y),size||8);
 }
 function tsh(s,x,y,col,size,align){ txt(s,x+1,y+1,'rgba(0,0,0,.85)',size,align); txt(s,x,y,col,size,align); }
 
@@ -541,10 +566,13 @@ function next(){
 function narrative(target,entry,y,size,lineHeight){
   const lines=entry.lines || [entry.s];
   target.save();
-  target.font='700 '+size+'px "Segoe UI", Arial, sans-serif';
+  target.font=size+'px "Press Start 2P", monospace';
+  const widest=Math.max(...lines.map(line=>target.measureText(line).width));
+  const fittedSize=Math.min(size,Math.floor(size*(W-48)/Math.max(1,widest)));
+  target.font=fittedSize+'px "Press Start 2P", monospace';
   target.textAlign='center'; target.textBaseline='top'; target.fillStyle='#ffffff';
   target.shadowColor='rgba(0,0,0,.95)'; target.shadowBlur=4; target.shadowOffsetY=2;
-  lines.forEach((line,i)=>target.fillText(line,W/2,y+i*lineHeight));
+  lines.forEach((line,i)=>retroText(target,line,W/2,y+i*lineHeight,fittedSize));
   target.restore();
 }
 function caption(list){
@@ -941,7 +969,7 @@ function portraitText(s,y,col,size,shadow=false){
   if(shadow){
     screen.shadowColor='rgba(0,0,0,.95)'; screen.shadowBlur=4; screen.shadowOffsetY=2;
   }
-  lines.forEach((text,i)=>screen.fillText(text,W/2,y+i*size*1.7));
+  lines.forEach((text,i)=>retroText(screen,text,W/2,y+i*size*1.7,size));
   screen.restore();
 }
 function presentFrame(){

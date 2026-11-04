@@ -1,4 +1,4 @@
-# Sara y Héctor — Nuestra aventura hacia el sí · 23 de octubre de 2027
+# Nos casamos — Sara y Héctor · 23 de octubre de 2027
 
 Invitación de boda en formato arcade retro. Una sola página, sin dependencias:
 todo (gráficos pixel art, música chiptune y efectos de sonido) se genera en el
@@ -36,7 +36,7 @@ const CONFIG = {
   p1:     "HECTOR",
   p2:     "SARA",
   p3:     "ELIAS",
-  titulo: "NUESTRA AVENTURA HACIA EL SÍ",
+  titulo: "MISIÓN: BODA",
   anio:   "2020",
   ano:    "2027",
   dia:    "23",

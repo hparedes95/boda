@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Sara y Héctor — Nuestra aventura hacia el sí · 23 de octubre de 2027</title>
+<title>Nos casamos — Sara &amp; Héctor, 23 de octubre de 2027</title>
 
 <!-- ============================================================
      PREVISUALIZACION EN WHATSAPP / REDES
      Cambia las 3 URLs de abajo si tu usuario o repo son distintos.
      Tienen que ser absolutas (https://...), las relativas no valen.
      ============================================================ -->
-<meta name="description" content="Sara y Héctor se casan el 23 de octubre de 2027. Comparte con nosotros nuestra aventura hacia el sí.">
+<meta name="description" content="Sara y Héctor se casan el 23 de octubre de 2027. Dale al play: nuestra historia en tres niveles.">
 <link rel="canonical" href="https://hparedes95.github.io/boda/">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="La boda de Sara y Héctor">
 <meta property="og:locale" content="es_ES">
 <meta property="og:url" content="https://hparedes95.github.io/boda/">
-<meta property="og:title" content="Sara y Héctor — Nuestra aventura hacia el sí">
+<meta property="og:title" content="Nos casamos — 23 de octubre de 2027">
 <meta property="og:description" content="Nos casamos el 23 de octubre de 2027. ¡Queremos celebrarlo contigo!">
 <meta property="og:image" content="https://hparedes95.github.io/boda/wedding-monogram.png">
 <meta property="og:image:secure_url" content="https://hparedes95.github.io/boda/wedding-monogram.png">
@@ -27,7 +27,7 @@
 <meta property="og:image:alt" content="Monograma floral S&amp;H de Sara y Héctor. 23 de octubre de 2027.">
 
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Sara y Héctor — Nuestra aventura hacia el sí">
+<meta name="twitter:title" content="Nos casamos — 23 de octubre de 2027">
 <meta name="twitter:description" content="Nos casamos el 23 de octubre de 2027. ¡Queremos celebrarlo contigo!">
 <meta name="twitter:image" content="https://hparedes95.github.io/boda/wedding-monogram.png">
 <meta name="twitter:image:alt" content="Monograma floral S&amp;H de Sara y Héctor. 23 de octubre de 2027.">
@@ -63,6 +63,7 @@
       radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.65) 100%); }
   .glow{ position:absolute; inset:0; pointer-events:none;
     background:radial-gradient(ellipse at center, rgba(120,200,255,.06), transparent 70%) }
+  #cab.home-scene .crt{ opacity:.4 }
 
   #bar{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; justify-content:center }
   .btn{
@@ -108,7 +109,7 @@ const CONFIG = {
   p1:      "HECTOR",
   p2:      "SARA",
   p3:      "ELIAS",
-  titulo:  "NUESTRA AVENTURA HACIA EL SÍ",
+  titulo:  "MISIÓN: BODA",
   anio:    "2020",
   ano:     "2027",
   dia:     "23",
@@ -473,12 +474,12 @@ const S_G = ["  hhhh  "," hssssh "," hsessh ","  ssss  ","  BBBB  "," BBBBBB ",
              " BBBBBB ","  BBBB  ","  pp pp ","  pp pp ","  oo oo "];
 const GC = ['#ff6b6b','#4dd6c1','#ffd257','#a78bfa','#7bd45c','#ff9f43','#67b8ff','#ff8fc7'];
 
-function spr(sp,x,y,pal,flip){
+function spr(sp,x,y,pal,flip,target=ctx){
   x=Math.round(x); y=Math.round(y);
   for(let r=0;r<sp.length;r++){ const row=sp[r];
     for(let c=0;c<row.length;c++){ const ch=row[c]; if(ch===' ')continue;
       const col=pal[ch]; if(!col)continue;
-      ctx.fillStyle=col; ctx.fillRect(flip?x+(row.length-1-c):x+c, y+r, 1, 1); }}
+      target.fillStyle=col; target.fillRect(flip?x+(row.length-1-c):x+c, y+r, 1, 1); }}
 }
 function rect(x,y,w,h,c){ ctx.fillStyle=c; ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h)); }
 function vgrad(x,y,w,h,a,b){ const g=ctx.createLinearGradient(0,y,0,y+h); g.addColorStop(0,a); g.addColorStop(1,b); ctx.fillStyle=g; ctx.fillRect(x,y,w,h); }
@@ -536,10 +537,10 @@ function boom(n,x,y,sp){ for(let i=0;i<n;i++) conf.push({
   x:x+(Math.random()-.5)*(sp||W), y:y+(Math.random()-.5)*20,
   vx:(Math.random()-.5)*70, vy:-Math.random()*100-20,
   c:GC[(Math.random()*GC.length)|0], l:1+Math.random()*2 }); }
-function stepConf(dt){
+function stepConf(dt,draw=true){
   for(const p of conf){ p.vy+=170*dt; p.x+=p.vx*dt; p.y+=p.vy*dt; p.l-=dt*.35; }
   conf = conf.filter(p=>p.l>0 && p.y<H+10);
-  for(const p of conf) rect(p.x,p.y,2,2,p.c);
+  if(draw) for(const p of conf) rect(p.x,p.y,2,2,p.c);
 }
 function hud(label, prog){
   rect(0,0,W,26,'rgba(0,0,0,.55)');
@@ -618,40 +619,79 @@ const CAP2 = [
   {t:7.6, d:3.4, s:'Y LLEGO ALGUIEN A COMPLETAR LA FAMILIA'},
   {t:11.2,d:3.0, s:CONFIG.p3 + '. JUGADOR 3'}
 ];
-function drawHouse(n){
-  const p=PAL.esp, hx=384, base=GY2;
-  rect(hx-2,base-2,64,2,'#8a6a4a');
+function drawHouse(target,n,hx,base,scale){
+  const p=PAL.esp;
+  target.save(); target.translate(hx,base); target.scale(scale,scale);
+  const r=(x,y,w,h,color)=>{ target.fillStyle=color; target.fillRect(x,y,w,h); };
+  r(-4,0,68,3,'#526a35');
   for(let i=0;i<Math.min(n,6);i++){
-    rect(hx,base-12*(i+1),60,11,p.wall);
-    rect(hx,base-12*(i+1),60,1,'#d9c39e');
-    if(i===1){ rect(hx+8,base-12*(i+1)+2,12,8,'#5fa8d6'); rect(hx+38,base-12*(i+1)+2,12,8,'#5fa8d6'); }
-    if(i===0){ rect(hx+24,base-11,14,11,'#8a5a34'); }
+    const y=-12*(i+1);
+    r(0,y,60,12,p.wall); r(0,y,60,1,'#d9c39e');
+    for(let x=(i%2)*10; x<60; x+=20) r(x,y+1,1,11,'#decdb0');
   }
-  if(n>=7){ ctx.fillStyle=p.roof; ctx.beginPath();
-    ctx.moveTo(hx-6,base-72); ctx.lineTo(hx+30,base-90); ctx.lineTo(hx+66,base-72); ctx.fill(); }
-  if(n>=8){ rect(hx+44,base-104,8,16,'#a8563c'); rect(hx+42,base-106,12,3,'#c4694a'); }
+  if(n>=1){ r(24,-Math.min(n*12,24),14,Math.min(n*12,24),'#8a5a34'); r(34,-6,2,2,'#ffd257'); }
+  if(n>=4) for(const x of [7,41]){
+    r(x-2,-44,16,20,'#fff6e2'); r(x,-42,12,16,'#5fa8d6');
+    r(x+5,-42,2,16,'#fff6e2'); r(x,-35,12,2,'#fff6e2');
+  }
+  if(n>=7){
+    target.fillStyle=p.roof; target.beginPath();
+    target.moveTo(-6,-72); target.lineTo(30,-94); target.lineTo(66,-72); target.fill();
+    r(-6,-72,72,4,'#a83c30');
+  }
+  if(n>=8){
+    r(44,-104,8,24,'#a8563c'); r(42,-106,12,3,'#c4694a');
+    r(3,-7,14,7,'#4f843c'); r(44,-7,14,7,'#4f843c');
+    for(const x of [6,12,47,53]) r(x,-9,3,3,'#ff8fc7');
+  }
+  target.restore();
+}
+function drawL2World(target,height){
+  const p=PAL.esp, tall=height>H, ground=height-50;
+  const r=(x,y,w,h,color)=>{ target.fillStyle=color; target.fillRect(Math.round(x),Math.round(y),w,h); };
+  const sky=target.createLinearGradient(0,0,0,ground);
+  sky.addColorStop(0,p.sky1); sky.addColorStop(1,'#ffe5b2');
+  target.fillStyle=sky; target.fillRect(0,0,W,height);
+  target.fillStyle='#fff2b0'; target.beginPath();
+  target.arc(68,tall?220:58,tall?25:18,0,Math.PI*2); target.fill();
+  for(const [x,y] of [[170,tall?260:60],[365,tall?200:40]]){
+    r(x,y,58,8,'#fff5de'); r(x+10,y-8,32,8,'#fff5de');
+  }
+  for(const [color,lift,amplitude] of [[p.far,tall?110:48,20],[p.near,tall?65:24,12]]){
+    target.fillStyle=color; target.beginPath(); target.moveTo(0,ground);
+    for(let x=0;x<=W;x+=8) target.lineTo(x,ground-lift-Math.sin(x*.017+lift)*amplitude);
+    target.lineTo(W,ground); target.fill();
+  }
+  r(0,ground,W,height-ground,p.ground); r(0,ground,W,4,'#b6cf77');
+  r(0,ground+24,W,12,'#c5a575');
+  for(let x=12;x<W;x+=43) r(x,ground+8,3,3,'#c6db89');
+  drawHouse(target,l2.built,326,ground,tall?2:1.2);
+  const scale=tall?4:2.5;
+  const worldX=x=>24+Math.max(0,Math.min(304,x))*.62;
+  for(const b of l2.blocks){
+    const x=worldX(b.x)+22;
+    const dropTop=tall?200:30;
+    const y=dropTop+(b.y+14)/(GY2-28)*(ground-14*scale-dropTop-36);
+    r(x,y,24,18,p.wall); r(x,y,24,3,'#fff6e2');
+    r(x,y+15,24,3,'#c9ab7d'); r(x+11,y+3,2,12,'#decdb0');
+  }
+  const x=worldX(l2.x), bob=Math.sin(T*9);
+  r(x-3,ground+1,scale*30,4,'#526a35');
+  r(x+8,ground-14*scale-10,scale*18,4,'#ffd257');
+  target.save(); target.translate(Math.round(x),ground); target.scale(scale,scale);
+  spr(S_M,0,-14-bob*.35,PM,false,target);
+  spr(S_F,12,-14+bob*.35,PF,false,target);
+  if(l2.kid) spr(S_K,25,-10+Math.sin(T*11)*.35,PK,false,target);
+  target.restore();
+  for(const particle of conf) r(worldX(particle.x),ground+(particle.y-GY2)*1.5,3,3,particle.c);
 }
 function drawL2(dt){
-  const p=PAL.esp;
-  vgrad(0,0,W,GY2,p.sky1,p.sky2);
-  ctx.fillStyle='#fff2b0'; ctx.beginPath(); ctx.arc(58,44,16,0,7); ctx.fill();
-  ctx.fillStyle=p.far; ctx.beginPath(); ctx.moveTo(0,GY2);
-  for(let x=0;x<=W;x+=8) ctx.lineTo(x,GY2-34-Math.sin(x*.017)*16);
-  ctx.lineTo(W,GY2); ctx.fill();
-  ctx.fillStyle=p.near; ctx.beginPath(); ctx.moveTo(0,GY2);
-  for(let x=0;x<=W;x+=8) ctx.lineTo(x,GY2-18-Math.sin(x*.026+2)*10);
-  ctx.lineTo(W,GY2); ctx.fill();
-  rect(0,GY2,W,H-GY2,p.ground); rect(0,GY2,W,3,'#93bb5c');
-
-  drawHouse(l2.built);
   for(const s of l2.sched) if(!s.done && st>=s.t){ s.done=true; l2.blocks.push({x:s.x,y:-14,vy:96}); }
   let low=null;
   for(const b of l2.blocks){ b.y += b.vy*dt; if(!low || b.y>low.y) low=b; }
   const target = low ? low.x-4 : l2.x;
   l2.x += (target-l2.x)*Math.min(1, dt*5.2);
   l2.x = Math.max(6, Math.min(304, l2.x));
-  for(const b of l2.blocks){
-    rect(b.x,b.y,16,12,p.wall); rect(b.x,b.y,16,2,'#fff6e2'); rect(b.x,b.y+10,16,2,'#c9ab7d'); }
   const catchY=GY2-30;
   for(let i=l2.blocks.length-1;i>=0;i--){
     const b=l2.blocks[i];
@@ -660,12 +700,8 @@ function drawL2(dt){
       if(l2.built===4 && !l2.kid){ l2.kid=true; jingle('family'); boom(36,l2.x+12,GY2-44,44); }
     }
   }
-  rect(l2.x,GY2-32,24,3,'#ffd257');
-  const bob=Math.sin(T*9);
-  spr(S_F, l2.x+13, GY2-14+bob, PF);
-  spr(S_M, l2.x,    GY2-14-bob, PM);
-  if(l2.kid) spr(S_K, l2.x+26, GY2-10+Math.sin(T*11), PK);
-  stepConf(dt);
+  stepConf(dt,false);
+  drawL2World(ctx,236);
   hud('NIVEL 2  ·  ESPANA', l2.built/NEED);
   caption(CAP2);
 }
@@ -855,6 +891,7 @@ function portraitText(s,y,col,size){
   lines.forEach((text,i)=>screen.fillText(text,W/2,y+i*size*1.7));
 }
 function presentFrame(){
+  document.getElementById('cab').classList.toggle('home-scene',scene().id==='l2');
   screen.clearRect(0,0,W,cv.height);
   if(!portrait){ screen.drawImage(frame,0,0); return; }
   const id=scene().id;
@@ -864,6 +901,12 @@ function presentFrame(){
   const bg=screen.createLinearGradient(0,0,0,cv.height);
   bg.addColorStop(0,colors[0]); bg.addColorStop(1,colors[1]);
   screen.fillStyle=bg; screen.fillRect(0,0,W,cv.height);
+  if(id==='l2'){
+    drawL2World(screen,600);
+    const grass=screen.createLinearGradient(0,600,0,cv.height);
+    grass.addColorStop(0,PAL.esp.ground); grass.addColorStop(1,'#20301f');
+    screen.fillStyle=grass; screen.fillRect(0,600,W,cv.height-600);
+  }
   if(id==='coin'){
     portraitText('NOS CASAMOS',120,'#ffffff',24);
     portraitText('UNA HISTORIA EN 3 NIVELES',180,'#8f7fa8',14);
@@ -915,14 +958,17 @@ function presentFrame(){
       if(st>=4.2) portraitText('JUGADORES CONECTADOS: '+l3.count,205,'#57d97f',14);
       else if(((T*3)|0)%2===0) portraitText('SE NECESITAN MAS JUGADORES',205,'#ff6b6b',14);
     }
-    screen.drawImage(frame,0,26,W,210,0,280,W,210);
+    if(id!=='l2') screen.drawImage(frame,0,26,W,210,0,280,W,210);
     const captions=id==='l1' ? CAP1 : id==='l2' ? CAP2 : CAP3;
     let current=null;
     for(const c of captions) if(st>=c.t) current=c;
     if(current){
       const age=st-current.t;
       screen.globalAlpha=Math.min(1,age*3)*Math.min(1,Math.max(0,(current.d-age)*3));
-      portraitText(current.s,610,'#ffffff',18);
+      if(id==='l2'){
+        screen.fillStyle='rgba(18,31,26,.8)'; screen.fillRect(20,620,W-40,160);
+      }
+      portraitText(current.s,id==='l2'?655:610,'#ffffff',18);
       screen.globalAlpha=1;
     }
   }

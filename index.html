@@ -1082,6 +1082,15 @@ function loop(now){
 
 /* ---------------- INTERACCION ---------------- */
 const cab=document.getElementById('cab');
+function silenceAudioForLink(){
+  muted=true;
+  document.getElementById('mute').textContent='SONIDO: OFF';
+  if(MUS.master){
+    const now=MUS.ac.currentTime;
+    MUS.master.gain.cancelScheduledValues(now);
+    MUS.master.gain.setValueAtTime(0,now);
+  }
+}
 function canvasPos(e){
   const r=cv.getBoundingClientRect();
   return { x:(e.clientX-r.left)*W/r.width, y:(e.clientY-r.top)*cv.height/r.height };
@@ -1093,8 +1102,10 @@ function start(){
 cab.addEventListener('click', e=>{
   if(scene().id==='end'){
     const p=canvasPos(e), button=portrait ? PORTRAIT_BTN : BTN;
-    if(CONFIG.web && p.x>button.x && p.x<button.x+button.w && p.y>button.y && p.y<button.y+button.h)
+    if(CONFIG.web && p.x>button.x && p.x<button.x+button.w && p.y>button.y && p.y<button.y+button.h){
+      silenceAudioForLink();
       window.open(CONFIG.web,'_blank','noopener');
+    }
     return;
   }
   start();
@@ -1103,7 +1114,11 @@ cab.addEventListener('keydown', e=>{
   if(e.code==='Space'||e.code==='Enter'){ e.preventDefault(); start(); }
 });
 const webBtn=document.getElementById('web');
-if(CONFIG.web) webBtn.href=CONFIG.web;
+if(CONFIG.web){
+  webBtn.href=CONFIG.web;
+  webBtn.addEventListener('click',silenceAudioForLink);
+  webBtn.addEventListener('auxclick',e=>{if(e.button===1)silenceAudioForLink();});
+}
 else { webBtn.textContent='WEB PRÓXIMAMENTE'; webBtn.setAttribute('aria-disabled','true');
        webBtn.addEventListener('click', e=>e.preventDefault()); }
 document.getElementById('again').addEventListener('click', ()=>{

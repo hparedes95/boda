@@ -528,8 +528,8 @@ function caption(list){
   const a = Math.min(1, age*3)*Math.min(1, Math.max(0,(cur.d-age)*3));
   if(a<=0) return;
   const home=scene().id==='l2';
-  ctx.globalAlpha=home?1:a;
-  rect(0,236,W,home?34:22,home?'#080f14':'rgba(0,0,0,.62)');
+  ctx.globalAlpha=a;
+  if(!home) rect(0,236,W,22,'rgba(0,0,0,.62)');
   ctx.globalAlpha=a;
   tsh(cur.s, W/2, home?246:242, '#ffffff', home?10:8);
   ctx.globalAlpha=1;
@@ -648,8 +648,14 @@ function drawHouse(target,n,hx,base,scale){
   }
   target.restore();
 }
-function drawL2World(target,height){
-  const p=PAL.esp, tall=height>H, ground=height-50;
+function shadeLandscape(target,y,height,from,to){
+  const shade=target.createLinearGradient(0,y,0,y+height);
+  shade.addColorStop(0,'rgba(12,25,30,'+from+')');
+  shade.addColorStop(1,'rgba(12,25,30,'+to+')');
+  target.fillStyle=shade; target.fillRect(0,y,W,height);
+}
+function drawL2World(target,height,ground=height-50){
+  const p=PAL.esp, tall=height>H;
   const r=(x,y,w,h,color)=>{ target.fillStyle=color; target.fillRect(Math.round(x),Math.round(y),w,h); };
   const sky=target.createLinearGradient(0,0,0,ground);
   sky.addColorStop(0,p.sky1); sky.addColorStop(1,'#ffe5b2');
@@ -703,8 +709,10 @@ function drawL2(dt){
     }
   }
   stepConf(dt,false);
-  drawL2World(ctx,236);
-  hud('NIVEL 2  ·  ESPANA', l2.built/NEED,'#080f14');
+  drawL2World(ctx,H,186);
+  shadeLandscape(ctx,0,70,.55,0);
+  shadeLandscape(ctx,206,64,0,.65);
+  hud('NIVEL 2  ·  ESPANA', l2.built/NEED,'transparent');
   caption(CAP2);
 }
 
@@ -879,7 +887,7 @@ function drawEnd(dt){
 
 /* La misma animación, con sus textos y escenas completos en ambas orientaciones. */
 const PORTRAIT_BTN = { x:102, y:650, w:276, h:45 };
-function portraitText(s,y,col,size){
+function portraitText(s,y,col,size,shadow=false){
   screen.font=size+'px "Press Start 2P", monospace';
   screen.textAlign='center'; screen.textBaseline='top'; screen.fillStyle=col;
   const lines=[];
@@ -890,7 +898,12 @@ function portraitText(s,y,col,size){
     else line=candidate;
   }
   lines.push(line);
+  screen.save();
+  if(shadow){
+    screen.shadowColor='rgba(0,0,0,.95)'; screen.shadowBlur=4; screen.shadowOffsetY=2;
+  }
   lines.forEach((text,i)=>screen.fillText(text,W/2,y+i*size*1.7));
+  screen.restore();
 }
 function presentFrame(){
   document.getElementById('cab').classList.toggle('home-scene',scene().id==='l2');
@@ -908,6 +921,8 @@ function presentFrame(){
     const grass=screen.createLinearGradient(0,600,0,cv.height);
     grass.addColorStop(0,PAL.esp.ground); grass.addColorStop(1,'#20301f');
     screen.fillStyle=grass; screen.fillRect(0,600,W,cv.height-600);
+    shadeLandscape(screen,0,230,.6,0);
+    shadeLandscape(screen,580,cv.height-580,0,.35);
   }
   if(id==='coin'){
     portraitText('NOS CASAMOS',120,'#ffffff',24);
@@ -951,11 +966,7 @@ function presentFrame(){
     // Mantener todo el escenario evita perder la casa, los invitados o los personajes.
     const label=id==='l1' ? 'NIVEL 1 · LIVERPOOL' : id==='l2' ? 'NIVEL 2 · ESPANA' : 'NIVEL 3 · LA BODA';
     const progress=id==='l1' ? st/scene().dur : id==='l2' ? l2.built/NEED : l3.power/100;
-    if(id==='l2'){
-      screen.fillStyle='#080f14'; screen.fillRect(24,64,W-48,128);
-      screen.fillRect(20,620,W-40,160);
-    }
-    portraitText(label,90,'#ffd257',16);
+    portraitText(label,90,'#ffd257',16,id==='l2');
     if(id==='l3') portraitText('FUERZA',130,'#ffffff',12);
     screen.fillStyle='#241a2e'; screen.fillRect(48,160,384,10);
     screen.fillStyle=id==='l3' ? (l3.power>60 ? '#57d97f' : PAL.bod.mag) : '#35d6ff';
@@ -971,7 +982,7 @@ function presentFrame(){
     if(current){
       const age=st-current.t;
       screen.globalAlpha=Math.min(1,age*3)*Math.min(1,Math.max(0,(current.d-age)*3));
-      portraitText(current.s,id==='l2'?655:610,'#ffffff',18);
+      portraitText(current.s,id==='l2'?655:610,'#ffffff',18,id==='l2');
       screen.globalAlpha=1;
     }
   }

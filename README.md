@@ -1,8 +1,11 @@
-# Nos casamos — Sara & Hector · 23 de octubre de 2027
+# Sara y Héctor — Nuestra aventura hacia el sí · 23 de octubre de 2027
 
 Invitación de boda en formato arcade retro. Una sola página, sin dependencias:
 todo (gráficos pixel art, música chiptune y efectos de sonido) se genera en el
 navegador con Canvas y Web Audio.
+
+La invitación se adapta a formato vertical u horizontal al girar el dispositivo,
+sin reiniciar la reproducción.
 
 ## Ver la web
 
@@ -11,7 +14,9 @@ https://hparedes95.github.io/boda/
 ## Archivos
 
 - `index.html` — la invitación completa (HTML + CSS + JS en un único archivo).
-- `preview.png` — imagen de previsualización para WhatsApp y redes (1200×630).
+- `preview.png` — imagen anterior de previsualización, conservada como icono del sitio.
+- `wedding-monogram.png` — monograma original de Sara y Héctor para la vista previa
+  de WhatsApp y redes (1254×1254).
 - `.nojekyll` — evita que GitHub Pages procese el sitio con Jekyll.
 
 ## Activar GitHub Pages
@@ -31,7 +36,7 @@ const CONFIG = {
   p1:     "HECTOR",
   p2:     "SARA",
   p3:     "ELIAS",
-  titulo: "MISIÓN: BODA",
+  titulo: "NUESTRA AVENTURA HACIA EL SÍ",
   anio:   "2020",
   ano:    "2027",
   dia:    "23",

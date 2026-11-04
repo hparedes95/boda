@@ -6,6 +6,8 @@ navegador con Canvas y Web Audio.
 
 La invitación se adapta a formato vertical u horizontal al girar el dispositivo,
 sin reiniciar la reproducción.
+Los subtítulos usan líneas elegidas por frase para conservar las palabras y los
+acentos completos, con una tipografía de lectura sobre el paisaje sombreado.
 
 ## Ver la web
 
@@ -33,21 +35,22 @@ Casi todo el texto está en el bloque `CONFIG` al principio del `<script>` de
 
 ```js
 const CONFIG = {
-  p1:     "HECTOR",
+  p1:     "HÉCTOR",
   p2:     "SARA",
-  p3:     "ELIAS",
+  p3:     "ELÍAS",
   titulo: "MISIÓN: BODA",
   anio:   "2020",
   ano:    "2027",
   dia:    "23",
   mes:    "OCTUBRE",
   web:    "https://www.bodas.net/web/sara-gamez-guasch-and-hector-paredes"
-                    // URL de la web con toda la info; vacío = "WEB PROXIMAMENTE"
+                    // URL de la web con toda la info; vacío = "WEB PRÓXIMAMENTE"
 };
 ```
 
 Los textos que aparecen abajo durante cada nivel están en `CAP1`, `CAP2` y
 `CAP3`, y la duración de cada escena en el array `SCENES`.
+El campo opcional `lines` fija los saltos de línea de las frases más largas.
 
 Si cambias de usuario o de repositorio, actualiza también las URLs absolutas de
 las etiquetas `og:` y `canonical` en el `<head>`: las relativas no funcionan
